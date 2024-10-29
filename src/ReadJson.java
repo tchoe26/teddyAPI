@@ -15,29 +15,14 @@ import org.json.simple.parser.ParseException;
 
 // Program for print data in JSON format.
 public class ReadJson {
-    public static void main(String args[]) throws ParseException {
-        // In java JSONObject is used to create JSON object
-        // which is a subclass of java.util.HashMap.
-
-        JSONObject file = new JSONObject();
-        file.put("Full Name", "Ritu Sharma");
-        file.put("Roll No.",(1704310046));
-        file.put("Tution Fees", (65400));
 
 
-        // To print in JSON format.
-        System.out.print(file.get("Tution Fees"));
-        System.out.println(file.get("Full Name"));
-        pull();
-
-    }
-
-    public static void pull() throws ParseException {
+    public ReadJson() throws ParseException {
         String output = "abc";
         String totlaJson="";
         try {
 
-                URL url = new URL("https://swapi.dev/api/people/4/");
+            URL url = new URL(SwingControlDemo.getLinkInput());
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
             conn.setRequestProperty("Accept", "application/json");
@@ -54,7 +39,7 @@ public class ReadJson {
 
             System.out.println("Output from Server .... \n");
             while ((output = br.readLine()) != null) {
-                System.out.println(output);
+               // System.out.println(output);
                 totlaJson+=output;
             }
 
@@ -70,35 +55,85 @@ public class ReadJson {
         JSONParser parser = new JSONParser();
         //System.out.println(str);
         org.json.simple.JSONObject jsonObject = (org.json.simple.JSONObject) parser.parse(totlaJson);
-        System.out.println(jsonObject);
+        //System.out.println(jsonObject);
 
         try {
+            //basic info
+            SwingControlDemo.writeToOutput("name: "+ jsonObject.get("name"));
+            SwingControlDemo.writeToOutput("height: "+ jsonObject.get("height"));
+            SwingControlDemo.writeToOutput("weight: "+ jsonObject.get("weight"));
 
-            String name = (String)jsonObject.get("name");
-
-            org.json.simple.JSONArray msg = (org.json.simple.JSONArray) jsonObject.get("films");
-            int n =   msg.size(); //(msg).length();
+            //ability
+            org.json.simple.JSONArray abilities = (org.json.simple.JSONArray) jsonObject.get("abilities");
+            int n =   abilities.size(); //(msg).length();
+            String[] abilityName = new String[n];
             for (int i = 0; i < n; ++i) {
-                String test =(String) msg.get(i);
-                System.out.println(test);
-                // System.out.println(person.getInt("key"));
+                JSONObject abilityObject = (JSONObject)abilities.get(i);
+                JSONObject ability = (JSONObject)abilityObject.get("ability");
+                abilityName[i] = (String)ability.get("name");
+
             }
-            String height = (String)jsonObject.get("height");
-            System.out.println(name);
-            System.out.println(height);
-            System.out.println((String)jsonObject.get("birth_year"));
-            System.out.println((String)jsonObject.get("eye_color"));
-            System.out.println((String)jsonObject.get("mass"));
+            SwingControlDemo.writeToOutput("abilities: " + String.join(", ", abilityName));
+
+            //held items
+            org.json.simple.JSONArray heldItems = (org.json.simple.JSONArray) jsonObject.get("held_items");
+            int heldItemsSize =   heldItems.size(); //(msg).length();
+            String[] itemName = new String[heldItemsSize];
+            for (int i = 0; i < heldItemsSize; ++i) {
+                JSONObject heldItemsObject = (JSONObject)heldItems.get(i);
+                JSONObject item = (JSONObject)heldItemsObject.get("item");
+                itemName[i] = (String)item.get("name");
+            }
+            SwingControlDemo.writeToOutput("held items: " + String.join(", ", itemName));
+
+            //moves
+            org.json.simple.JSONArray movesArray = (org.json.simple.JSONArray) jsonObject.get("moves");
+            int movesSize = movesArray.size(); //(msg).length();
+            String[] movesName = new String[movesSize];
+            for (int i = 0; i < movesSize; ++i) {
+                JSONObject movesObject = (JSONObject)movesArray.get(i);
+                JSONObject moves = (JSONObject)movesObject.get("move");
+                movesName[i] = (String)moves.get("name");
+            }
+            SwingControlDemo.writeToOutput("moves: " + String.join(", ", movesName));
+
+            //stats
+            org.json.simple.JSONArray statsArray = (org.json.simple.JSONArray) jsonObject.get("stats");
+            int statsSize = statsArray.size();
+            String[] statsName = new String [statsSize];
+            int[] statsValue = new int[statsSize];
+
+
+            String comma;
+            SwingControlDemo.writeToOutput("stats:");
+            for (int i=0; i<statsSize; i++) {
+
+                JSONObject statsObject = (JSONObject)statsArray.get(i);
+                statsValue[i] = ((Long)statsObject.get("base_stat")).intValue();
+                JSONObject statsObject2 = (JSONObject)statsObject.get("stat");
+                statsName[i] = (String)statsObject2.get("name");
+               /* if (i==statsSize-1) {
+                    comma = "";
+                } else {
+                    comma = ",";
+                }
+                SwingControlDemo.writeToOutput(statsName[i] + "(" + statsValue[i] + ")" + comma + " ");*/
+                SwingControlDemo.writeToOutput(String.join(", ", statsName[i]+"("+statsValue[i]+")"));
+            }
+
+
+            //String height = (String)jsonObject.get("height");
+
+
+
+            //System.out.println(jsonObject.get("abilities.1.ability.name"));
         }
 
         catch (Exception e) {
             e.printStackTrace();
         }
 
-
-
-
     }
+
+
 }
-
-
